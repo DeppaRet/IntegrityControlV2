@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -327,63 +330,20 @@ namespace IntegrityV2
           PolinomText.Visible = true;
           if (Action.Text == "Отправить сообщение")
           {
-            getBinaryCycle(Input.Text);
-            char throwed = '0';
-            string dividend = Output.Lines[0];
-            string divider = Polinom.Text;
-            int registerSize = Polinom.Text.Length;
-            int size = Output.Text.Length;
-            int current = 0;
-            string divInt = "";
-            string afterDiv = "";
-            char[] register = new char[registerSize];
-
-            for (int i = 0; i < registerSize; i++)
-            {
-              register[i] = '0';
-            }
-
-            while (current < size)
-            {
-              //divInt = Convert.ToString(Convert.ToInt32(divInt) * 10);
-              throwed = register[0];
-              for (int i = 0; i < registerSize - 1; i++)
-              {
-                register[i] = register[i + 1]; //register[i] = register[i+1];
-              }
-
-              register[registerSize - 1] = dividend[current];
-              //divInt = divInt + dividend[temp];
-              if (throwed == '1')
-              {
-                afterDiv = Convert.ToString(Convert.ToInt32(divInt, 2) - Convert.ToInt32(divider, 2), 2);
-                divInt = afterDiv;
-                int tmpSize = divInt.Length - 1;
-                for (int j = registerSize - 1; j >= 0; j--)
-                {
-                  if (tmpSize >= 0)
-                  {
-                    register[j] = divInt[tmpSize];
-                    tmpSize--;
-                  }
-                  else
-                  {
-                    register[j] = '0';
-                  }
-                }
-              }
-
-              divInt += dividend[current];
-
-              current++;
-            }
-
-            resultedText += afterDiv;
-            Output.Text = resultedText;
+            Test();
           }
           else if (Action.Text == "Проверить полученное сообщение")
           {
-            
+            Test();
+            string control = Output.Lines[2];
+            if (control == ControlSum.Text)
+            {
+              Output.Text += "\n Сообщение передано без ошибок!";
+            }
+            else
+            {
+              Output.Text += "\n Сообщение передано c ошибкой!";
+            }
           }
           else
           {
@@ -447,5 +407,78 @@ namespace IntegrityV2
         VerticalControlSumText.Visible = true;
       }
     }
+
+    public void Test()
+    {
+      getBinaryCycle(Input.Text);
+      string dividend = Output.Lines[0];
+      string divider = Polinom.Text;
+      int size = dividend.Length;
+      int current = 0;
+      int throwed = 0;
+      int regiSize = divider.Length - 1;
+      List<int> regi = new List<int>();
+      List<int> ish = new List<int>(); //Output.Lines.Select(x => int.Parse(x))
+      for (int i = 0; i < regiSize; i++)
+      {
+        regi.Add(0);
+      }
+
+      for (int i = 0; i < size; i++)
+      {
+        if (dividend[i] == 48)
+        {
+          ish.Add(0);
+        }
+        else if (dividend[i] == 49)
+        {
+          ish.Add(1);
+        }
+        
+      }
+
+      Queue<int> register = new Queue<int>();
+      for (int i = 0; i < regiSize; i++)
+      {
+        register.Enqueue(0);
+      }
+
+      while (current < ish.Count)
+      {
+        throwed = register.Dequeue();
+        register.Enqueue(ish[current]);
+        if (throwed == 0 || throwed == 48) //0
+        {
+          current++;
+          continue;
+        }
+        else if (throwed == 1 || throwed == 49) //1
+        {
+          for (int i = 0; i < register.Count; i++)
+          {
+            int tempre = register.Dequeue();
+            tempre = tempre ^ Convert.ToInt32(divider[i + 1]);
+            if (tempre == 48)
+            {
+              register.Enqueue(0);
+            }
+            else if (tempre == 49)
+            {
+              register.Enqueue(1);
+            }
+            
+          }
+        }
+        current++;
+      }
+
+      Output.Text += "\nОстаток от деления: \n";
+      for (int i = 0; i < register.Count; i++)
+      {
+       Output.Text += register.Dequeue();
+      }
+
+    }
+
   }
 }
