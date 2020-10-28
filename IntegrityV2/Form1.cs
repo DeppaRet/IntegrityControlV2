@@ -25,7 +25,7 @@ namespace IntegrityV2
         tmp[i] = str[i];
       }
 
-      result = Encoding.GetEncoding(1251).GetBytes(tmp);
+      result = Encoding.GetEncoding("cp866").GetBytes(tmp);
       for (int i = 0; i < result.Length; i++)
       {
         Output.Text += Convert.ToString(result[i], 2) + '\n';
@@ -43,7 +43,7 @@ namespace IntegrityV2
         tmp[i] = str[i];
       }
 
-      result = Encoding.GetEncoding(1251).GetBytes(tmp);
+      result = Encoding.GetEncoding("cp866").GetBytes(tmp);
       for (int i = 0; i < result.Length; i++)
       {
         Output.Text += Convert.ToString(result[i], 2);
@@ -472,12 +472,14 @@ namespace IntegrityV2
         current++;
       }
 
+      string result = "";
       Output.Text += "\nОстаток от деления: \n";
       for (int i = 0; i < register.Count; i++)
       {
-       Output.Text += register.Dequeue();
+        result += register.Dequeue();
       }
 
+      Output.Text += new string(result.Reverse().ToArray());
     }
 
   }
